@@ -32,7 +32,7 @@ def load_csv_safe(path: str) -> Optional[pd.DataFrame]:
 
 
 # ===================== Load Data/Model =====================
-MODEL_PATH = "FV2.h5"
+MODEL_PATH = "FV78.h5"
 _model = None
 try:
     if os.path.exists(MODEL_PATH):
@@ -559,3 +559,4 @@ def run():
 # Run the app
 if __name__ == "__main__":
     run()
+
