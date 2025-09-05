@@ -1,3 +1,4 @@
+# ===================== Imports =====================
 import streamlit as st
 from PIL import Image
 from tensorflow.keras.utils import load_img, img_to_array
@@ -5,57 +6,66 @@ import numpy as np
 from keras.models import load_model
 import pandas as pd
 import os
+import json
+import random
+import re
+from string import Template
 from typing import Optional
 
-# ===================== Helpers =====================
+
+# ===================== Helpers: CSV standardization =====================
 def _standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
     """Lowercase + strip all column names for easy access."""
     df = df.copy()
     df.columns = df.columns.str.strip().str.lower()
     return df
 
+
 def load_csv_safe(path: str) -> Optional[pd.DataFrame]:
     try:
         if os.path.exists(path):
             df = pd.read_csv(path)
             return _standardize_columns(df)
-    except Exception as e:
-        st.warning(f"⚠️ Could not load {path}: {e}")
+    except Exception:
+        pass
     return None
 
-# ===================== Load Model =====================
-MODEL_PATH = os.path.join(os.path.dirname(__file__), "FV2.h5")
 
+# ===================== Load Data/Model =====================
+MODEL_PATH = 'FV2.h5'
 _model = None
 try:
     if os.path.exists(MODEL_PATH):
         _model = load_model(MODEL_PATH)
-        st.success("✅ Model FV2.h5 loaded successfully")
-    else:
-        st.error(f"❌ Model file not found at {MODEL_PATH}")
-except Exception as e:
-    st.error(f"❌ Error loading model: {e}")
+except Exception:
+    _model = None
 
-# ===================== Load CSVs =====================
+
+# Core CSVs (standardized columns)
 fruits_df = load_csv_safe("fruits.csv")
 vegetables_df = load_csv_safe("vegetables.csv")
 nutrient_info_df = load_csv_safe("nutrients_info.csv")
+# Add with your other CSV loads
+recipes_df = load_csv_safe("food_recipes.csv")
+# Load recipes CSV safely
+recipes_df = pd.read_csv("recipes.csv")
 
-# Load only ONE recipes file (choose which one you need)
-recipes_df = load_csv_safe("food_recipes.csv") or load_csv_safe("recipes.csv")
+# Standardize column names
+recipes_df.columns = recipes_df.columns.str.strip().str.lower()
 
-if recipes_df is not None:
-    # Normalize column names
-    if "food items" in recipes_df.columns:
-        recipes_df.rename(columns={"food items": "ingredients"}, inplace=True)
-    if "item" in recipes_df.columns:
-        recipes_df.rename(columns={"item": "ingredients"}, inplace=True)
-    if "recipe name" in recipes_df.columns:
-        recipes_df.rename(columns={"recipe name": "recipe"}, inplace=True)
-    if "recipes" in recipes_df.columns:
-        recipes_df.rename(columns={"recipes": "recipe"}, inplace=True)
+# Ensure expected columns exist
+# Rename common variations to 'ingredients' and 'recipe'
+if "food items" in recipes_df.columns:
+    recipes_df.rename(columns={"food items": "ingredients"}, inplace=True)
+if "item" in recipes_df.columns:
+    recipes_df.rename(columns={"item": "ingredients"}, inplace=True)
+if "recipe name" in recipes_df.columns:
+    recipes_df.rename(columns={"recipe name": "recipe"}, inplace=True)
+if "recipes" in recipes_df.columns:
+    recipes_df.rename(columns={"recipes": "recipe"}, inplace=True)
 
-# ===================== Load Calories Data =====================
+
+# Calorie catalogue (Tamil Nadu foods)
 calorie_df_raw = load_csv_safe("tamil_nadu_foods.csv")
 calorie_df = None
 if calorie_df_raw is not None:
@@ -71,6 +81,7 @@ if calorie_df_raw is not None:
         rename_map['quantity'] = 'Quantity'
     if 'category' in cols:
         rename_map['category'] = 'Category'
+    # Add this line to handle your CSV exact column name "calorie value"
     if 'calorie value' in cols:
         rename_map['calorie value'] = 'Calorie Values (kcal)'
     elif 'calorie values (kcal)' in cols:
@@ -599,4 +610,3 @@ def run():
 # Run the app
 if __name__ == "__main__":
     run()
-
