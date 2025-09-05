@@ -1,0 +1,12 @@
+Nutrient,Description
+energy (kcal/kJ),Provides the fuel the body needs for daily activities and maintaining body functions.
+water (g),"Essential for hydration, temperature regulation, and transporting nutrients in the body."
+protein (g),"Helps build and repair muscles, tissues, and supports enzymes and hormones."
+total fat (g),"Source of energy, helps absorb vitamins, but too much can lead to obesity/heart problems."
+carbohydrates (g),"Main source of energy for the body and brain; includes sugars, starch, fiber."
+fiber (g),"Supports digestion, prevents constipation, helps control blood sugar and cholesterol."
+sugar (g),"Quick source of energy but excess intake can cause diabetes, obesity, and tooth decay."
+calcium (mg),"Essential for strong bones and teeth, muscle function, and nerve signaling."
+iron (mg),Helps produce hemoglobin for carrying oxygen in blood; prevents anemia.
+vitamin A (µg),"Important for healthy vision, immune system, and skin health."
+vitamin C (mg),"Boosts immunity, helps in wound healing, and improves iron absorption."
